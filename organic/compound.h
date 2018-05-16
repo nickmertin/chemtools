@@ -11,15 +11,14 @@
 
 namespace organic {
     class compound final {
-    private:
+    public:
         struct carbon_detail {
             utils::var_array<group *, 3> groups;
             utils::ranged_numeric<int, 0, 3> bond_type;
         };
 
-        std::vector<carbon_detail> details;
+        utils::var_array<carbon_detail, 10> details;
 
-    public:
         compound() noexcept;
         compound(size_t length);
         std::string get_iupac_name() const noexcept;
