@@ -1,0 +1,3 @@
+[submodule "lib/periodic-table"]
+	path = lib/periodic-table
+	url = https://github.com/andrejewski/periodic-table.git
