@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <sstream>
-#include <cassert>
 #include "compound.h"
 
 const static std::string chain_prefix[11] = {
@@ -32,7 +31,6 @@ const static std::string last_suffix_names[3] = {
 organic::compound::compound() noexcept : details({{{}, 0}}) {}
 
 organic::compound::compound(size_t length) {
-    assert(length && length <= 10);
     for (size_t i = 0; i < length; ++i)
         details.push_back({{}, i < length - 1});
 }

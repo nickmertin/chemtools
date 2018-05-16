@@ -25,10 +25,10 @@ void shell_context::run(std::vector<std::string> args) noexcept {
         _result = execute(cmd, parts);
         switch (_result) {
             case failure:
-                std::cerr << getName() << ": " << cmd << ": failure" << std::endl;
+                std::cout << getName() << ": " << cmd << ": failure" << std::endl;
                 break;
             case not_found:
-                std::cerr << getName() << ": " << cmd << ": not found" << std::endl;
+                std::cout << getName() << ": " << cmd << ": not found" << std::endl;
                 break;
             case quit:
                 return;

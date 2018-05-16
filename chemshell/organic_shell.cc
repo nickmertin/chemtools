@@ -34,7 +34,13 @@ simple_shell_context organic_shell("organic", {
             return shell_context::success;
         }},
         {"chain", [] (const auto &args) {
-            compound = organic::compound(read_num(args, 0, "New chain length: "));
-            return shell_context::success;
+            try {
+                compound = organic::compound(read_num(args, 0, "New chain length: "));
+                return shell_context::success;
+            }
+            catch (utils::exception e) {
+                std::cout << e << std::endl;
+                return shell_context::failure;
+            }
         }}
 }, &root_shell);
