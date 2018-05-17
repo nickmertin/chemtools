@@ -28,6 +28,10 @@ namespace organic {
         base::formula get_formula() const noexcept;
 
         void set_bond_type(size_t index, utils::ranged_numeric<int, 1, 3> value);
+
+        void add_group(size_t index, std::function<group *()> factory);
+
+        void remove_group(size_t index, size_t group);
     };
 }
 

@@ -1,20 +1,8 @@
 #include <algorithm>
 #include <sstream>
+#include <functional>
 #include "compound.h"
-
-const static std::string chain_prefix[11] = {
-        "",
-        "meth",
-        "eth",
-        "prop",
-        "but",
-        "pent",
-        "hex",
-        "hept",
-        "oct",
-        "non",
-        "dec"
-};
+#include "organic.h"
 
 const static std::string suffix_names[3] = {
         "en",
@@ -40,8 +28,7 @@ std::string organic::compound::get_iupac_name() const noexcept {
     std::map<std::string, std::vector<int>> prefixes;
     for (int i = 0; i < details.size(); ++i) {
         const carbon_detail &d = details[i];
-        for (int j = 0; j < d.groups.size(); ++j) {
-            group *g = d.groups[j];
+        for (auto g : d.groups) {
             if (g->get_nomenclature() == group::prefix)
                 prefixes[g->get_name()].push_back(i + 1);
         }
@@ -61,7 +48,7 @@ std::string organic::compound::get_iupac_name() const noexcept {
     }
     if (hyphenate)
         out << '-';
-    out << chain_prefix[details.size()];
+    out << get_chain_prefix(details.size());
     std::vector<int> bondTypes;
     std::transform(details.cbegin(), details.cend(), std::back_inserter(bondTypes), [] (const auto &d) { return d.bond_type.value; });
     std::map<group::suffix_type, std::vector<int>> suffixes;
@@ -104,7 +91,23 @@ base::formula organic::compound::get_formula() const noexcept {
 }
 
 void organic::compound::set_bond_type(size_t index, utils::ranged_numeric<int, 1, 3> value) {
-    if (!index || index-- >= details.size())
+    if (!index || index-- >= details.size() || details[index].groups.size() + value + (index ? details[index - 1].bond_type.value : 0) > 4)
         throw utils::EX_BOUNDS;
     details[index].bond_type = value.value;
+}
+
+void organic::compound::add_group(size_t index, std::function<group *()> factory) {
+    if (!index || index-- >= details.size() || details[index].groups.size() + details[index].bond_type + (index ? details[index - 1].bond_type.value : 0) > 3)
+        throw utils::EX_BOUNDS;
+    details[index].groups.push_back(factory());
+}
+
+void organic::compound::remove_group(size_t index, size_t group) {
+    if (!index || index-- >= details.size() || !group || group-- > details[index].groups.size())
+        throw utils::EX_BOUNDS;
+    utils::var_array<organic::group *, 3> new_groups;
+    std::copy(details[index].groups.cbegin(), details[index].groups.cbegin() + group, std::back_inserter(new_groups));
+    std::copy(details[index].groups.cbegin() + group + 1, details[index].groups.cend(), std::back_inserter(new_groups));
+    delete details[index].groups[group];
+    details[index].groups = new_groups;
 }

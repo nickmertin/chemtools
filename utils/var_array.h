@@ -13,7 +13,9 @@ namespace utils {
         std::vector<T> data;
 
     public:
-        class iterator final : std::iterator<std::random_access_iterator_tag, T> {
+        typedef T value_type;
+
+        class iterator final : public std::iterator<std::random_access_iterator_tag, T> {
         private:
             var_array<T, N_max> *array;
             size_t index;
@@ -85,9 +87,7 @@ namespace utils {
             }
 
             iterator operator+(size_t offset) const {
-                if (index == end || index + offset >= N_max)
-                    throw EX_ITERATOR;
-                return {array, index + offset};
+                return {array, index == end || index + offset >= array->size() ? end : -offset > index ? 0 : index + offset};
             }
 
             iterator operator-(size_t offset) const {
@@ -107,7 +107,7 @@ namespace utils {
             }
         };
 
-        class const_iterator final : std::iterator<std::input_iterator_tag, T> {
+        class const_iterator final : public std::iterator<std::input_iterator_tag, T> {
         private:
             const var_array<T, N_max> *array;
             size_t index;
@@ -177,9 +177,7 @@ namespace utils {
             }
 
             const_iterator operator+(size_t offset) const {
-                if (index == end || index + offset >= N_max)
-                    throw EX_ITERATOR;
-                return {array, index + offset};
+                return {array, index == end || index + offset >= array->size() ? end : -offset > index ? 0 : index + offset};
             }
 
             const_iterator operator-(size_t offset) const {
