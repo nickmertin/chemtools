@@ -4,6 +4,7 @@
 #include "../utils/functional.h"
 #include "../utils/io.h"
 #include "../organic/branch.h"
+#include "../organic/halogen.h"
 
 static organic::compound compound;
 
@@ -91,6 +92,18 @@ simple_shell_context organic_shell("organic", {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto length = read<size_t>(args, 1, "Length: ", utils::cast_result<utils::ranged_numeric<int, 1, 10>, long, const std::string &>(utils::parse<long>));
                 compound.add_group(index, [length] () { return new organic::branch(length); });
+                return shell_context::success;
+            }
+            catch (utils::exception e) {
+                std::cout << e << std::endl;
+                return shell_context::failure;
+            }
+        }},
+        {"halogen", [] (const auto &args) {
+            try {
+                auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
+                auto type = read<organic::halogen::type>(args, 1, "Element: ", organic::halogen::get_parser());
+                compound.add_group(index, [type] () { return new organic::halogen(type); });
                 return shell_context::success;
             }
             catch (utils::exception e) {

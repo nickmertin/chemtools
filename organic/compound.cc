@@ -97,13 +97,13 @@ void organic::compound::set_bond_type(size_t index, utils::ranged_numeric<int, 1
 }
 
 void organic::compound::add_group(size_t index, std::function<group *()> factory) {
-    if (!index || index-- >= details.size() || details[index].groups.size() + details[index].bond_type + (index ? details[index - 1].bond_type.value : 0) > 3)
+    if (!index || index-- > details.size() || details[index].groups.size() + details[index].bond_type + (index ? details[index - 1].bond_type.value : 0) > 3)
         throw utils::EX_BOUNDS;
     details[index].groups.push_back(factory());
 }
 
 void organic::compound::remove_group(size_t index, size_t group) {
-    if (!index || index-- >= details.size() || !group || group-- > details[index].groups.size())
+    if (!index || index-- > details.size() || !group || group-- > details[index].groups.size())
         throw utils::EX_BOUNDS;
     utils::var_array<organic::group *, 3> new_groups;
     std::copy(details[index].groups.cbegin(), details[index].groups.cbegin() + group, std::back_inserter(new_groups));
