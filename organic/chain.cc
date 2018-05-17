@@ -75,7 +75,7 @@ std::string organic::chain::get_iupac_name() const noexcept {
 base::formula organic::chain::get_formula() const noexcept {
     base::formula f;
     f[base::C] = static_cast<uint16_t>(size());
-    for (size_t i = 0; i <= size(); ++i)
+    for (size_t i = 0; i < size(); ++i)
         f[base::H] += 4 - details[i].bond_type - details[i].groups.size() - (i ? details[i - 1].bond_type.value : 0);
     for (const auto &d : details)
         for (auto g : d.groups)
