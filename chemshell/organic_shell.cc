@@ -10,6 +10,8 @@ static organic::compound compound;
 template<class T>
 static T read(const std::vector<std::string> args, size_t index, std::string prompt, std::function<T(const std::string &)> parser) {
     try {
+        if (index >= args.size())
+            throw 0;
         return parser(args[index]);
     }
     catch (...) {
@@ -59,7 +61,11 @@ simple_shell_context organic_shell("organic", {
         {"list-groups", [] (const auto &args) {
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                for (const auto &d : compound.details[index - 1].groups)
+                if (!index || index-- > compound.details.size()) {
+                    std::cout << "Out of range!" << std::endl;
+                    return shell_context::failure;
+                }
+                for (const auto &d : compound.details[index].groups)
                     std::cout << d->get_name() << " (" << d->get_formula().str() << ")" << std::endl;
                 return shell_context::success;
             }
