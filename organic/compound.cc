@@ -107,7 +107,7 @@ std::string organic::compound::get_iupac_name() const noexcept {
             }
             out << '-';
         }
-        out << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
+        out << (utils::is_vowel(suffix_names[s.first][0]) ? numeric_prefix_vowel : numeric_prefix)[s.second.size()] << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
     }
     return out.str();
 }
