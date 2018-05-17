@@ -1,49 +1,8 @@
 #include <sstream>
 #include <algorithm>
 #include "chain.h"
-#include "compound.h"
 #include "../utils/string_utils.h"
 #include "organic.h"
-
-const static std::string suffix_names[3] = {
-        "en",
-        "yn",
-        "ol"
-};
-
-const static std::string last_suffix_names[3] = {
-        "ene",
-        "yne",
-        "ol"
-};
-
-const static std::string numeric_prefix[11] = {
-        "",
-        "",
-        "di",
-        "tri",
-        "tetra",
-        "penta",
-        "hexa",
-        "hepta",
-        "octa",
-        "ennea",
-        "deca"
-};
-
-const static std::string numeric_prefix_vowel[11] = {
-        "",
-        "",
-        "di",
-        "tri",
-        "tetr",
-        "pent",
-        "hex",
-        "hept",
-        "oct",
-        "enne",
-        "dec"
-};
 
 organic::chain::chain() noexcept : chain(1) {}
 
@@ -76,7 +35,7 @@ std::string organic::chain::get_iupac_name() const noexcept {
             }
             out << '-';
         }
-        out << (utils::is_vowel(p.first[0]) ? numeric_prefix_vowel : numeric_prefix)[p.second.size()] << p.first;
+        out << get_numeric_prefix(p.second.size(), utils::is_vowel(p.first[0])) << p.first;
     }
     out << get_chain_prefix(details.size());
     std::vector<int> bondTypes;
@@ -107,7 +66,8 @@ std::string organic::chain::get_iupac_name() const noexcept {
             }
             out << '-';
         }
-        out << (utils::is_vowel(suffix_names[s.first][0]) ? numeric_prefix_vowel : numeric_prefix)[s.second.size()] << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
+        std::string name = get_suffix_name(s.first, s.first == suffixes.crbegin()->first);
+        out << get_numeric_prefix(s.second.size(), utils::is_vowel(name[0])) << name;
     }
     return out.str();
 }
