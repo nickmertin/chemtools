@@ -5,6 +5,7 @@
 #include "../utils/io.h"
 #include "../organic/branch.h"
 #include "../organic/halogen.h"
+#include "../organic/hydroxyl.h"
 
 static organic::compound compound;
 
@@ -104,6 +105,17 @@ simple_shell_context organic_shell("organic", {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto type = read<organic::halogen::type>(args, 1, "Element: ", organic::halogen::get_parser());
                 compound.add_group(index, [type] () { return new organic::halogen(type); });
+                return shell_context::success;
+            }
+            catch (utils::exception e) {
+                std::cout << e << std::endl;
+                return shell_context::failure;
+            }
+        }},
+        {"hydroxyl", [] (const auto &args) {
+            try {
+                auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
+                compound.add_group(index, [] () { return new organic::hydroxyl(); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
