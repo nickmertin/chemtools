@@ -13,7 +13,7 @@ namespace organic {
     class compound final {
     public:
         struct carbon_detail {
-            utils::var_array<group *, 3> groups;
+            utils::var_array<group *, 4> groups;
             utils::ranged_numeric<int, 0, 3> bond_type;
         };
 

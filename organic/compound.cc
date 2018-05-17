@@ -138,7 +138,7 @@ void organic::compound::add_group(size_t index, std::function<group *()> factory
 void organic::compound::remove_group(size_t index, size_t group) {
     if (!index || index-- > details.size() || !group || group-- > details[index].groups.size())
         throw utils::EX_BOUNDS;
-    utils::var_array<organic::group *, 3> new_groups;
+    utils::var_array<organic::group *, 4> new_groups;
     std::copy(details[index].groups.cbegin(), details[index].groups.cbegin() + group, std::back_inserter(new_groups));
     std::copy(details[index].groups.cbegin() + group + 1, details[index].groups.cend(), std::back_inserter(new_groups));
     delete details[index].groups[group];
