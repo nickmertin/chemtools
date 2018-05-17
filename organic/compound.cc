@@ -87,7 +87,7 @@ std::string organic::compound::get_iupac_name() const noexcept {
                 out << ',';
             out << s.second[i];
         }
-        out << '-' << (s.first == suffixes.rbegin()->first ? suffix_names : last_suffix_names)[s.first];
+        out << '-' << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
     }
     return out.str();
 }
@@ -98,7 +98,13 @@ base::formula organic::compound::get_formula() const noexcept {
     for (size_t i = 0; i < details.size(); ++i)
         f[base::H] += 4 - details[i].bond_type - details[i].groups.size() - (i ? details[i - 1].bond_type.value : 0);
     for (const auto &d : details)
-        for (int i = 0; i < d.groups.size(); ++i)
-            f += d.groups[i]->get_formula();
+        for (auto g : d.groups)
+            f += g->get_formula();
     return f;
+}
+
+void organic::compound::set_bond_type(size_t index, utils::ranged_numeric<int, 1, 3> value) {
+    if (!index || index-- >= details.size())
+        throw utils::EX_BOUNDS;
+    details[index].bond_type = value.value;
 }

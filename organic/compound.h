@@ -20,9 +20,14 @@ namespace organic {
         utils::var_array<carbon_detail, 10> details;
 
         compound() noexcept;
-        compound(size_t length);
+
+        explicit compound(size_t length);
+
         std::string get_iupac_name() const noexcept;
+
         base::formula get_formula() const noexcept;
+
+        void set_bond_type(size_t index, utils::ranged_numeric<int, 1, 3> value);
     };
 }
 

@@ -3,7 +3,7 @@ project(chemtools)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SRC_UTILS utils/ranged_numeric.h utils/string_utils.h utils/var_array.h utils/exception.h)
+set(SRC_UTILS utils/ranged_numeric.h utils/string_utils.h utils/var_array.h utils/exception.h utils/functional.h utils/io.h)
 
 add_library(base STATIC ${SRC_UTILS} base/base.cc base/base.h base/formula.cc base/formula.h base/table.cc base/table.h base/table.inc)
 add_library(organic STATIC ${SRC_UTILS} organic/compound.cc organic/compound.h organic/group.cc organic/group.h)

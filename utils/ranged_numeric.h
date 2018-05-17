@@ -11,6 +11,8 @@ namespace utils {
     public:
         N value;
 
+        ranged_numeric() : value(min) {}
+
         ranged_numeric(N value) : value(value) {
             if (value < min || value > max)
                 throw(EX_BOUNDS);
@@ -19,7 +21,7 @@ namespace utils {
         ranged_numeric(const ranged_numeric<N, min, max> &other) : ranged_numeric(other.value) {}
 
         ranged_numeric &operator=(const ranged_numeric<N, min, max> &other) {
-            new (this) ranged_numeric<N, min, max>(other.value);
+            return *new (this) ranged_numeric<N, min, max>(other.value);
         }
 
         operator N() const {
