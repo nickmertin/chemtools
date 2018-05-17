@@ -81,7 +81,7 @@ simple_shell_context organic_shell("organic", {
             }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                if (!index || index-- > compound->size()) {
+                if (!index || index > compound->size()) {
                     std::cout << "Out of range!" << std::endl;
                     return shell_context::failure;
                 }
