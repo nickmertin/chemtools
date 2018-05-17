@@ -5,6 +5,12 @@
 #include "formula.h"
 #include "table.h"
 
+static void write_part(const std::pair<std::string, uint16_t > &p, std::ostream &out) {
+    out << p.first;
+    if (p.second != 1)
+        out << p.second;
+}
+
 base::formula::formula() {
     memset(counts, 0, sizeof(counts));
 }
@@ -24,15 +30,14 @@ std::string base::formula::str() const {
             parts[table[e].symbol] = counts[e];
     std::stringstream out;
     if (counts[C]) {
-        out << "C" << counts[C];
+        write_part({"C", counts[C]}, out);
         if (counts[H])
-            out << "H" << counts[H];
+            write_part({"H", counts[H]}, out);
     }
     else if (counts[H])
         parts["H"] = counts[H];
-    for (auto &p : parts) {
-        out << p.first << p.second;
-    }
+    for (auto &p : parts)
+        write_part(p, out);
     return out.str();
 }
 
