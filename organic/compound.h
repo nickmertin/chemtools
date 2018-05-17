@@ -4,28 +4,29 @@
 
 #include <cstdlib>
 #include <vector>
+#include <functional>
 #include "group.h"
 #include "../utils/ranged_numeric.h"
 #include "../base/formula.h"
 #include "../utils/var_array.h"
 
 namespace organic {
-    class compound final {
+    class compound {
     public:
         struct carbon_detail {
             utils::var_array<group *, 4> groups;
             utils::ranged_numeric<int, 0, 3> bond_type;
         };
 
-        utils::var_array<carbon_detail, 10> details;
+        virtual std::string get_iupac_name() const noexcept = 0;
 
-        compound() noexcept;
+        virtual base::formula get_formula() const noexcept = 0;
 
-        explicit compound(size_t length);
+        virtual size_t size() const noexcept = 0;
 
-        std::string get_iupac_name() const noexcept;
+        virtual carbon_detail &operator[](size_t index) noexcept = 0;
 
-        base::formula get_formula() const noexcept;
+        virtual const carbon_detail &operator[](size_t index) const noexcept = 0;
 
         void set_bond_type(size_t index, utils::ranged_numeric<int, 1, 3> value);
 

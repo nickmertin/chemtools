@@ -7,8 +7,9 @@
 #include "../organic/halogen.h"
 #include "../organic/hydroxyl.h"
 #include "../organic/phenyl.h"
+#include "../organic/chain.h"
 
-static organic::compound compound;
+static organic::compound *compound;
 
 template<class T>
 static T read(const std::vector<std::string> args, size_t index, std::string prompt, std::function<T(const std::string &)> parser) {
@@ -32,16 +33,24 @@ static T read(const std::vector<std::string> args, size_t index, std::string pro
 
 simple_shell_context organic_shell("organic", {
         {"formula", [] (const auto &args) {
-            std::cout << compound.get_formula().str() << std::endl;
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
+            std::cout << compound->get_formula().str() << std::endl;
             return shell_context::success;
         }},
         {"name", [] (const auto &args) {
-            std::cout << compound.get_iupac_name() << std::endl;
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
+            std::cout << compound->get_iupac_name() << std::endl;
             return shell_context::success;
         }},
         {"chain", [] (const auto &args) {
             try {
-                compound = organic::compound(read<size_t>(args, 0, "New chain length: ", utils::parse<size_t>));
+                compound = new organic::chain(read<size_t>(args, 0, "New chain length: ", utils::parse<size_t>));
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -50,10 +59,14 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"bond", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto bond = read(args, 1, "Bond count: ", utils::cast_result<utils::ranged_numeric<int, 1, 3>, long, const std::string &>(utils::parse<long>));
-                compound.set_bond_type(index, bond);
+                compound->set_bond_type(index, bond);
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -62,13 +75,17 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"list-groups", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                if (!index || index-- > compound.details.size()) {
+                if (!index || index-- > compound->size()) {
                     std::cout << "Out of range!" << std::endl;
                     return shell_context::failure;
                 }
-                for (const auto &d : compound.details[index].groups)
+                for (const auto &d : (*compound)[index].groups)
                     std::cout << d->get_name() << " (" << d->get_formula().str() << ")" << std::endl;
                 return shell_context::success;
             }
@@ -78,10 +95,14 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"remove-group", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto group = read<size_t>(args, 1, "Group index: ", utils::parse<size_t>);
-                compound.remove_group(index, group);
+                compound->remove_group(index, group);
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -90,10 +111,14 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"branch", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto length = read<size_t>(args, 1, "Length: ", utils::cast_result<utils::ranged_numeric<int, 1, 10>, long, const std::string &>(utils::parse<long>));
-                compound.add_group(index, [length] () { return new organic::branch(length); });
+                compound->add_group(index, [length] () { return new organic::branch(length); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -102,10 +127,14 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"halogen", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto type = read<organic::halogen::type>(args, 1, "Element: ", organic::halogen::get_parser());
-                compound.add_group(index, [type] () { return new organic::halogen(type); });
+                compound->add_group(index, [type] () { return new organic::halogen(type); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -114,9 +143,13 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"hydroxyl", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                compound.add_group(index, [] () { return new organic::hydroxyl(); });
+                compound->add_group(index, [] () { return new organic::hydroxyl(); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -125,9 +158,13 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"phenyl", [] (const auto &args) {
+            if (!compound) {
+                std::cout << "No compound has been loaded!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                compound.add_group(index, [] () { return new organic::phenyl(); });
+                compound->add_group(index, [] () { return new organic::phenyl(); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
