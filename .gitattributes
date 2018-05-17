@@ -1,0 +1,3 @@
+lib/* linguist-vendored
+base/table.inc linguist-language=c++
+*/*.h linguist-language=c++
