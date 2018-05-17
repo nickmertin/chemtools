@@ -3,6 +3,7 @@
 #include <functional>
 #include "compound.h"
 #include "organic.h"
+#include "../utils/string_utils.h"
 
 const static std::string suffix_names[3] = {
         "en",
@@ -14,6 +15,34 @@ const static std::string last_suffix_names[3] = {
         "ene",
         "yne",
         "ol"
+};
+
+const static std::string numeric_prefix[11] = {
+        "",
+        "",
+        "di",
+        "tri",
+        "tetra",
+        "penta",
+        "hexa",
+        "hepta",
+        "octa",
+        "ennea",
+        "deca"
+};
+
+const static std::string numeric_prefix_vowel[11] = {
+        "",
+        "",
+        "di",
+        "tri",
+        "tetr",
+        "pent",
+        "hex",
+        "hept",
+        "oct",
+        "enne",
+        "dec"
 };
 
 organic::compound::compound() noexcept : details({{{}, 0}}) {}
@@ -35,19 +64,20 @@ std::string organic::compound::get_iupac_name() const noexcept {
     }
     bool hyphenate = false;
     for (auto &p : prefixes) {
-        if (hyphenate)
+        if (details.size() > 1) {
+            if (hyphenate)
+                out << '-';
+            else
+                hyphenate = true;
+            for (int i = 0; i < p.second.size(); ++i) {
+                if (i)
+                    out << ',';
+                out << p.second[i];
+            }
             out << '-';
-        else
-            hyphenate = true;
-        for (int i = 0; i < p.second.size(); ++i) {
-            if (i)
-                out << ',';
-            out << p.second[i];
         }
-        out << '-' << p.first;
+        out << (utils::is_vowel(p.first[0]) ? numeric_prefix_vowel : numeric_prefix)[p.second.size()] << p.first;
     }
-    if (hyphenate)
-        out << '-';
     out << get_chain_prefix(details.size());
     std::vector<int> bondTypes;
     std::transform(details.cbegin(), details.cend(), std::back_inserter(bondTypes), [] (const auto &d) { return d.bond_type.value; });
@@ -68,13 +98,16 @@ std::string organic::compound::get_iupac_name() const noexcept {
     if (*std::max_element(bondTypes.cbegin(), bondTypes.cend()) <= 1)
         out << (suffixes.empty() ? "ane" : "an");
     for (auto &s : suffixes) {
-        out << '-';
-        for (int i = 0; i < s.second.size(); ++i) {
-            if (i)
-                out << ',';
-            out << s.second[i];
+        if (details.size() > (s.first == group::alcohol ? 1 : 2)) {
+            out << '-';
+            for (int i = 0; i < s.second.size(); ++i) {
+                if (i)
+                    out << ',';
+                out << s.second[i];
+            }
+            out << '-';
         }
-        out << '-' << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
+        out << (s.first == suffixes.crbegin()->first ? last_suffix_names : suffix_names)[s.first];
     }
     return out.str();
 }

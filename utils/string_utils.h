@@ -19,6 +19,11 @@ namespace utils {
         } while (pos != std::basic_string<charT>::npos);
         return parts;
     }
+
+    template<class charT>
+    bool is_vowel(charT c) {
+        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+    }
 }
 
 #endif //CHEMTOOLS_STRING_UTILS_H
