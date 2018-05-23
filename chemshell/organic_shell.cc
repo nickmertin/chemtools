@@ -113,13 +113,13 @@ simple_shell_context organic_shell("organic", {
                 return shell_context::failure;
             }
             try {
-                auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                if (!index || index > complex->size()) {
-                    std::cout << "Out of range!" << std::endl;
-                    return shell_context::failure;
+                for (size_t i = 1; i <= complex->size(); ++i) {
+                    auto &d = (*complex)[i];
+                    for (size_t j = 0; j < d.groups.size(); ++j) {
+                        auto &g = d.groups[j];
+                        std::cout << i << '-' << (j + 1) << ": " << g->get_name() << " (" << g->get_formula().str() << ")" << std::endl;
+                    }
                 }
-                for (const auto &d : (*complex)[index].groups)
-                    std::cout << d->get_name() << " (" << d->get_formula().str() << ")" << std::endl;
                 return shell_context::success;
             }
             catch (utils::exception e) {
