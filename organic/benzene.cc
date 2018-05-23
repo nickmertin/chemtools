@@ -27,7 +27,7 @@ std::string organic::benzene::get_iupac_name() const noexcept {
                 prefixes[g->get_name()].push_back(i + 1);
         }
     }
-    bool numbering = prefixes.size() + suffixes.size() > 1;
+    bool numbering = prefixes.size() + suffixes.size() > 1 && !(prefixes.size() == 1 && prefixes.crbegin()->second.size() == 1 && suffixes.empty() || prefixes.empty() && suffixes.size() == 1 && suffixes.crbegin()->second.size() == 1);
     bool hyphenate = false;
     for (auto &p : prefixes) {
         if (numbering) {
