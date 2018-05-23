@@ -50,8 +50,7 @@ simple_shell_context organic_shell("organic", {
             return shell_context::success;
         }},
         {"chain", [] (const auto &args) {
-            if (compound)
-                delete compound;
+            delete compound;
             try {
                 compound = new organic::chain(read<size_t>(args, 0, "New chain length: ", utils::parse<size_t>));
                 return shell_context::success;
@@ -62,8 +61,7 @@ simple_shell_context organic_shell("organic", {
             }
         }},
         {"benzene", [] (const auto &args) {
-            if (compound)
-                delete compound;
+            delete compound;
             compound = new organic::benzene();
             return shell_context::success;
         }},
