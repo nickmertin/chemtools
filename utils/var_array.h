@@ -199,21 +199,25 @@ namespace utils {
 
         explicit var_array(size_t length) : data(length) {
             if (length > N_max)
-                throw(EX_BOUNDS);
+                throw EX_BOUNDS;
         }
 
         var_array(std::initializer_list<T> list) : data(list) {
             if (list.size() > N_max)
-                throw(EX_BOUNDS);
+                throw EX_BOUNDS;
         }
 
         var_array() : var_array({}) {}
 
-        T &operator[](size_t i) noexcept {
+        T &operator[](size_t i) {
+            if (i > data.size())
+                throw EX_BOUNDS;
             return data[i];
         }
 
-        const T &operator[](size_t i) const noexcept {
+        const T &operator[](size_t i) const {
+            if (i > data.size())
+                throw EX_BOUNDS;
             return data[i];
         }
 
@@ -223,13 +227,13 @@ namespace utils {
 
         void push_back(const T &value) {
             if (data.size() >= N_max)
-                throw(EX_BOUNDS);
+                throw EX_BOUNDS;
             data.push_back(value);
         }
 
         T pop_back() {
             if (data.empty())
-                throw(EX_ITERATOR);
+                throw EX_ITERATOR;
             return data.pop_back();
         }
 

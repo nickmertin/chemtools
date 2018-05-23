@@ -8,6 +8,7 @@
 #include "../organic/hydroxyl.h"
 #include "../organic/phenyl.h"
 #include "../organic/chain.h"
+#include "../organic/benzene.h"
 
 static organic::compound *compound;
 
@@ -49,6 +50,8 @@ simple_shell_context organic_shell("organic", {
             return shell_context::success;
         }},
         {"chain", [] (const auto &args) {
+            if (compound)
+                delete compound;
             try {
                 compound = new organic::chain(read<size_t>(args, 0, "New chain length: ", utils::parse<size_t>));
                 return shell_context::success;
@@ -57,6 +60,12 @@ simple_shell_context organic_shell("organic", {
                 std::cout << e << std::endl;
                 return shell_context::failure;
             }
+        }},
+        {"benzene", [] (const auto &args) {
+            if (compound)
+                delete compound;
+            compound = new organic::benzene();
+            return shell_context::success;
         }},
         {"bond", [] (const auto &args) {
             if (!compound) {
