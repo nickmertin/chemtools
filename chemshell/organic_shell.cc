@@ -9,6 +9,7 @@
 #include "../organic/phenyl.h"
 #include "../organic/chain.h"
 #include "../organic/benzene.h"
+#include "../organic/ether.h"
 
 static organic::compound *compound;
 
@@ -65,15 +66,35 @@ simple_shell_context organic_shell("organic", {
             compound = new organic::benzene();
             return shell_context::success;
         }},
+        {"ether", [] (const auto &args) {
+            delete compound;
+            try {
+                auto left_length = read<uint16_t>(args, 0, "Left side length: ", utils::parse<unsigned long>);
+                auto left_position = read<uint16_t>(args, 1, "Left side attachment position: ", utils::parse<unsigned long>);
+                auto right_length = read<uint16_t>(args, 2, "Right side length: ", utils::parse<unsigned long>);
+                auto right_position = read<uint16_t>(args, 3, "Right side attachment position: ", utils::parse<unsigned long>);
+                compound = new organic::ether(left_length, left_position, right_length, right_position);
+                return shell_context::success;
+            }
+            catch (utils::exception e) {
+                std::cout << e << std::endl;
+                return shell_context::failure;
+            }
+        }},
         {"bond", [] (const auto &args) {
             if (!compound) {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto bond = read(args, 1, "Bond count: ", utils::cast_result<utils::ranged_numeric<int, 1, 3>, long, const std::string &>(utils::parse<long>));
-                compound->set_bond_type(index, bond);
+                complex->set_bond_type(index, bond);
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -86,13 +107,18 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                if (!index || index > compound->size()) {
+                if (!index || index > complex->size()) {
                     std::cout << "Out of range!" << std::endl;
                     return shell_context::failure;
                 }
-                for (const auto &d : (*compound)[index].groups)
+                for (const auto &d : (*complex)[index].groups)
                     std::cout << d->get_name() << " (" << d->get_formula().str() << ")" << std::endl;
                 return shell_context::success;
             }
@@ -106,10 +132,15 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto group = read<size_t>(args, 1, "Group index: ", utils::parse<size_t>);
-                compound->remove_group(index, group);
+                complex->remove_group(index, group);
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -122,10 +153,15 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto length = read<size_t>(args, 1, "Length: ", utils::cast_result<utils::ranged_numeric<int, 1, 10>, long, const std::string &>(utils::parse<long>));
-                compound->add_group(index, [length] () { return new organic::branch(length); });
+                complex->add_group(index, [length] () { return new organic::branch(length); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -138,10 +174,15 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
                 auto type = read<organic::halogen::type>(args, 1, "Element: ", organic::halogen::get_parser());
-                compound->add_group(index, [type] () { return new organic::halogen(type); });
+                complex->add_group(index, [type] () { return new organic::halogen(type); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -154,9 +195,14 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                compound->add_group(index, [] () { return new organic::hydroxyl(); });
+                complex->add_group(index, [] () { return new organic::hydroxyl(); });
                 return shell_context::success;
             }
             catch (utils::exception e) {
@@ -169,9 +215,14 @@ simple_shell_context organic_shell("organic", {
                 std::cout << "No compound has been loaded!" << std::endl;
                 return shell_context::failure;
             }
+            auto *complex = dynamic_cast<organic::complex_compound *>(compound);
+            if (!complex) {
+                std::cout << "Invalid compound type!" << std::endl;
+                return shell_context::failure;
+            }
             try {
                 auto index = read<size_t>(args, 0, "Carbon index: ", utils::parse<size_t>);
-                compound->add_group(index, [] () { return new organic::phenyl(); });
+                complex->add_group(index, [] () { return new organic::phenyl(); });
                 return shell_context::success;
             }
             catch (utils::exception e) {

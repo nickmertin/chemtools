@@ -2,10 +2,10 @@
 #define CHEMTOOLS_BENZENE_H
 
 
-#include "compound.h"
+#include "complex_compound.h"
 
 namespace organic {
-    class benzene final : public compound {
+    class benzene final : public complex_compound {
         carbon_detail details[6];
 
     public:

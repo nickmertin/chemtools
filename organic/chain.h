@@ -3,10 +3,10 @@
 
 
 #include <strings.h>
-#include "compound.h"
+#include "complex_compound.h"
 
 namespace organic {
-    class chain final : public compound {
+    class chain final : public complex_compound {
     private:
         utils::var_array<carbon_detail, 10> details;
 

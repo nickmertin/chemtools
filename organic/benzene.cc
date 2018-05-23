@@ -79,10 +79,10 @@ size_t organic::benzene::size() const noexcept {
     return 6;
 }
 
-organic::compound::carbon_detail &organic::benzene::operator[](size_t index) noexcept {
+organic::complex_compound::carbon_detail &organic::benzene::operator[](size_t index) noexcept {
     return details[(index - 1) % 6];
 }
 
-const organic::compound::carbon_detail &organic::benzene::operator[](size_t index) const noexcept {
+const organic::complex_compound::carbon_detail &organic::benzene::operator[](size_t index) const noexcept {
     return details[(index - 1) % 6];
 }

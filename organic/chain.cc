@@ -87,10 +87,10 @@ size_t organic::chain::size() const noexcept {
     return details.size();
 }
 
-organic::compound::carbon_detail &organic::chain::operator[](size_t index) noexcept {
+organic::complex_compound::carbon_detail &organic::chain::operator[](size_t index) noexcept {
     return details[index - 1];
 }
 
-const organic::compound::carbon_detail &organic::chain::operator[](size_t index) const noexcept {
+const organic::complex_compound::carbon_detail &organic::chain::operator[](size_t index) const noexcept {
     return details[index - 1];
 }
